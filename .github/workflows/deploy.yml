@@ -1,0 +1,27 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 13.207.188.49
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/predictive-maintenance-mlops
+            git pull origin main
+            docker stop api || true
+            docker rm api || true
+            docker build -t predictive-maintenance-api .
+            docker run -d -p 8000:8000 --name api predictive-maintenance-api
