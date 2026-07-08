@@ -1,11 +1,15 @@
 import pickle
 import numpy as np
+import logging
 from fastapi import FastAPI
 from schemas import PredictionRequest, PredictionResponse
 
+# Setup logging for CloudWatch
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 app = FastAPI(title="Predictive Maintenance API")
 
-# Load model and features at startup
 with open("../models/model.pkl", "rb") as f:
     model = pickle.load(f)
 
@@ -28,6 +32,7 @@ def predict(request: PredictionRequest):
     else:
         risk = "normal"
     
+    logger.info(f"Prediction: RUL={rul:.2f}, risk={risk}")
     return {"rul": round(rul, 2), "risk_level": risk}
 
 @app.get("/health")
