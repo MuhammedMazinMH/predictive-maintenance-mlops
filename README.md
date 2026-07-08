@@ -35,6 +35,7 @@ Aircraft engines degrade over time. Unexpected failures cause:
 └─────────────┘
 plain
 
+
 ## 🛠️ Tech Stack
 
 | Layer | Tool | Purpose |
@@ -55,15 +56,17 @@ plain
 - **Target:** Remaining Useful Life (RUL) in cycles
 - **Size:** 20,631 readings
 
-## 🚀 Live Demo (Previously Deployed)
+## 🚀 Deployment (Previously Live on AWS)
 
-> ⚠️ Instance terminated to avoid AWS charges. Screenshots available below.
+> ⚠️ AWS EC2 instance terminated to stay within free tier limits. Full deployment was live and tested.
 
-| Endpoint | URL | Status |
-|----------|-----|--------|
-| Health Check | `http://13.207.188.49:8000/health` | ❌ Terminated |
-| API Docs | `http://13.207.188.49:8000/docs` | ❌ Terminated |
-| Predict | `POST /predict` | ❌ Terminated |
+**What was deployed:**
+- FastAPI serving predictions at `http://<EC2_IP>:8000`
+- Interactive Swagger docs at `/docs`
+- Docker container running on Amazon Linux 2023
+- Auto-deployment via GitHub Actions on every push
+
+**Screenshots of live deployment:** Available in repo issues
 
 ## 📈 Model Performance
 
@@ -77,18 +80,34 @@ plain
 - ✅ **MLflow experiment tracking** — compare models, register best
 - ✅ **FastAPI auto-docs** — interactive Swagger UI at `/docs`
 - ✅ **Docker containerization** — runs anywhere
-- ✅ **GitHub Actions CI/CD** — push code → auto-deploy
+- ✅ **GitHub Actions CI/CD** — push code → auto-deploy to EC2
 - ✅ **CloudWatch logging** — monitor predictions in real-time
 - ✅ **Risk classification** — normal / high / critical alerts
 
-## 🧪 API Usage
+## 🧪 Run Locally
 
 ```bash
-# Health check
-curl http://13.207.188.49:8000/health
+# Clone repo
+git clone https://github.com/MuhammedMazinMH/predictive-maintenance-mlops.git
+cd predictive-maintenance-mlops
 
-# Predict RUL
-curl -X POST http://13.207.188.49:8000/predict \
+# Setup virtual environment
+python -m venv venv
+venv\Scripts\activate  # Windows
+source venv/bin/activate  # Linux/Mac
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start API
+cd src/api
+uvicorn main:app --reload
+
+API will be live at: http://localhost:8000/docs
+
+🧪 Example Prediction
+
+curl -X POST http://localhost:8000/predict \
   -H "Content-Type: application/json" \
   -d '{
     "sensor_1": -0.0007,
@@ -109,14 +128,17 @@ curl -X POST http://13.207.188.49:8000/predict \
     "setting_2": 39.06,
     "setting_3": 23.42
   }'
+
 Response:
+
 JSON
 {
   "rul": 84.71,
   "risk_level": "normal"
 }
+
 📁 Project Structure
-plain
+
 predictive-maintenance-mlops/
 ├── 📁 notebooks/
 │   ├── 01_eda.ipynb              # Exploratory data analysis
@@ -135,12 +157,13 @@ predictive-maintenance-mlops/
 │       └── train_clean.csv       # Clean dataset
 ├── 📁 .github/
 │   └── workflows/
-│       └── deploy.yml            # CI/CD pipeline
+│       └── deploy.yml            # CI/CD pipeline for AWS EC2
 ├── Dockerfile                    # Docker image definition
 ├── requirements.txt              # Python dependencies
-└── README.md                     # This file
+└── README.md
+                     # This file
 🔄 CI/CD Pipeline
-yaml
+
 on: push to main
 jobs:
   1. Checkout code
@@ -150,6 +173,7 @@ jobs:
   5. Build new Docker image
   6. Start new container
   7. API live in ~20 seconds
+
 🎓 What I Learned
 Building production ML pipelines end-to-end
 Docker containerization for ML models
@@ -157,5 +181,6 @@ AWS EC2 deployment with security groups
 GitHub Actions for automated deployment
 MLflow for experiment tracking and model registry
 FastAPI for high-performance model serving
-📝 License
-MIT
+
+📬 Contact
+Muhammed Mazin MH
