@@ -1,10 +1,10 @@
 import pickle
 import numpy as np
 import logging
+import pandas as pd
 from fastapi import FastAPI
 from schemas import PredictionRequest, PredictionResponse
 
-# Setup logging for CloudWatch
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -22,8 +22,10 @@ def home():
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(request: PredictionRequest):
-    input_data = np.array([[getattr(request, f) for f in feature_names]])
-    rul = float(model.predict(input_data)[0])
+    # Fix: Use pandas DataFrame with feature names
+    input_dict = {f: getattr(request, f) for f in feature_names}
+    input_df = pd.DataFrame([input_dict])
+    rul = float(model.predict(input_df)[0])
     
     if rul < 20:
         risk = "critical"
