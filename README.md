@@ -1,4 +1,3 @@
-@"
 # Predictive Maintenance MLOps
 
 End-to-end MLOps pipeline for predicting engine remaining useful life (RUL).
@@ -25,4 +24,3 @@ End-to-end MLOps pipeline for predicting engine remaining useful life (RUL).
 cd src/api
 uvicorn main:app --reload
 
-"@ | Out-File -Encoding utf8 README.md
